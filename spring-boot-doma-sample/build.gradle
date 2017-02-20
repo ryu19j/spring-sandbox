@@ -1,6 +1,8 @@
 buildscript {
 	ext {
 		springBootVersion = '1.5.1.RELEASE'
+		domaVersion = '2.15.0'
+        springBootDomaVersion = '1.1.0'
 	}
 	repositories {
 		mavenCentral()
@@ -19,7 +21,11 @@ jar {
 	version = '0.0.1-SNAPSHOT'
 }
 
-sourceCompatibility = 1.8
+tasks.withType(JavaCompile) {
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
+    options.encoding = 'UTF-8'
+}
 
 repositories {
 	mavenCentral()
@@ -27,7 +33,10 @@ repositories {
 
 
 dependencies {
+    compile('org.springframework.boot:spring-boot-starter-jdbc')
 	compile('org.springframework.boot:spring-boot-starter-web')
-	runtime('com.h2database:h2')
+    runtime('org.springframework.boot:spring-boot-devtools')
+    runtime('com.h2database:h2')
+    compile "org.seasar.doma:doma:$domaVersion"
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
