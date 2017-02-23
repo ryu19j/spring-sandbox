@@ -40,5 +40,9 @@ dependencies {
     runtime('org.springframework.boot:spring-boot-devtools')
     runtime('com.h2database:h2')
     compile "org.seasar.doma:doma:$domaVersion"
+    compile "org.seasar.doma.boot:doma-spring-boot-starter:$springBootDomaVersion"
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 }
+compileJava.options.compilerArgs = ['-Adoma.dao.subpackage=impl', '-Adoma.dao.suffix=Impl']
+compileJava.dependsOn processResources
+processResources.destinationDir = compileJava.destinationDir
