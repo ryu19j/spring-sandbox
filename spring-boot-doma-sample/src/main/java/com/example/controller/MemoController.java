@@ -1,7 +1,5 @@
 package com.example.controller;
 
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +20,7 @@ public class MemoController {
 
     @GetMapping("{id}")
     public Memo getMemo(@PathVariable int id) {
-        return dao.selectById(id);
+        return dao.selectById(id).orElse(new Memo());
     }
 
     @PostMapping
@@ -33,4 +31,11 @@ public class MemoController {
         return entity;
     }
 
+    @PostMapping("{id}")
+    void update(@PathVariable int id, @RequestParam String content) {
+        dao.selectById(id).ifPresent(entity -> {
+            entity.content = content;
+            dao.update(entity);
+        });
+    }
 }
