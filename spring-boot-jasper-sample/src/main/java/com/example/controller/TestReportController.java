@@ -8,7 +8,9 @@ import java.util.Map;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,10 +21,15 @@ import net.sf.jasperreports.engine.data.JRCsvDataSource;
 @RestController
 public class TestReportController {
 
+    @Autowired
+    ResourceLoader resourceLoader;
+	
 	@RequestMapping(value = "/download")
 	public String download(HttpServletResponse response) throws JRException, IOException {
-		File reportFile = new FileSystemResource("src/main/resources/static/reports/TestReport.jasper").getFile();
-		JRCsvDataSource dataSource = new JRCsvDataSource(new FileSystemResource("src/main/resources/static/csv/holiday.csv").getFile());
+		Resource resource = resourceLoader.getResource("classpath:static/reports/TestReport.jasper");
+		File reportFile = resource.getFile();
+		File csvFile = resourceLoader.getResource("classpath:static/csv/holiday.csv").getFile();
+		JRCsvDataSource dataSource = new JRCsvDataSource(csvFile);
 	    dataSource.setUseFirstRowAsHeader(true);
 		Map<String, Object> parameter = new HashMap<>();
         byte[] bytes = JasperRunManager.runReportToPdf(reportFile.getPath(), parameter, dataSource);
