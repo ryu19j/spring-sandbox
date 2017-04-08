@@ -3,6 +3,7 @@ package com.example.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -14,23 +15,31 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.dao.HolidayDao;
+import com.example.entity.Holiday;
+import com.example.service.HolidayService;
+
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperRunManager;
-import net.sf.jasperreports.engine.data.JRCsvDataSource;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 @RestController
-public class TestReportController {
+@RequestMapping("download")
+public class DownloadReportController {
 
     @Autowired
     ResourceLoader resourceLoader;
+
+    @Autowired
+    HolidayService holidayService;
 	
-	@RequestMapping(value = "/download")
+	@RequestMapping(value = "/pdf")
 	public String download(HttpServletResponse response) throws JRException, IOException {
 		Resource resource = resourceLoader.getResource("classpath:static/reports/TestReport.jasper");
 		File reportFile = resource.getFile();
-		File csvFile = resourceLoader.getResource("classpath:static/csv/holiday.csv").getFile();
-		JRCsvDataSource dataSource = new JRCsvDataSource(csvFile);
-	    dataSource.setUseFirstRowAsHeader(true);
+		
+		List<Holiday> holidayList = holidayService.getHoliday();
+		JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(holidayList);
 		Map<String, Object> parameter = new HashMap<>();
         byte[] bytes = JasperRunManager.runReportToPdf(reportFile.getPath(), parameter, dataSource);
         
